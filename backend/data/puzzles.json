@@ -1,0 +1,11 @@
+{
+    "2026-03-19": {
+        "puzzle_id": 1,
+        "groups": [
+            { "level": 0, "group": "Types of Cat", "members": ["TABBY", "SIAMESE", "BENGAL", "RAGDOLL"] },
+            { "level": 1, "group": "___FISH", "members": ["SWORD", "STAR", "CAT", "BLOW"] },
+            { "level": 2, "group": "Car Brands", "members": ["FORD", "HONDA", "BMW", "AUDI"] },
+            { "level": 3, "group": "Shades of Blue", "members": ["NAVY", "COBALT", "AZURE", "TEAL"] }
+        ]
+    }
+}

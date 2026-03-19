@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+    --bg: #f9f7f2;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --muted: #888;
+    --border: #e0ddd6;
+    --tile-bg: #efede6;
+    --tile-selected: #1a1a1a;
+    --tile-selected-text: #ffffff;
+    --radius: 6px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.app {
+    width: 100%;
+    max-width: 500px;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.board {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.tile {
+    background: var(--tile-bg);
+    border: none;
+    border-radius: var(--radius);
+    padding: 20px 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    user-select: none;
+}
+
+.tile:hover:not(:disabled) {
+    background: #e4e2db;
+}
+
+.tile.selected {
+    background: var(--tile-selected);
+    color: var(--tile-selected-text);
+    transform: scale(1.03);
+}
+
+.tile:disabled {
+    cursor: default;
+}
+
+.solved-row {
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    animation: popIn 0.3s ease;
+}
+
+.solved-group-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.solved-members {
+    font-size: 0.8rem;
+    opacity: 0.85;
+}
+
+.message {
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 10px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    animation: fadeIn 0.2s ease;
+}
+
+.mistakes {
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+}
+
+button.btn-primary, button.btn-secondary, button.btn-share {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 99px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+button.btn-primary {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+button.btn-secondary {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text);
+}
+
+button.btn-share {
+    background: #5865f2;
+    color: #fff;
+    width: 100%;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+button:not(:disabled):hover {
+    opacity: 0.85;
+}
+
+.screen-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted);
+}
+
+@keyframes popIn {
+    from { transform: scale(0.96); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

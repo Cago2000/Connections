@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Environment & secrets
+.env
+settings.json
+
+# Node
+node_modules/
+frontend/dist/
+
+# Game data
+backend/data/state.json
+
+# Cloudflare
+*.json
+!package.json
+!tsconfig.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

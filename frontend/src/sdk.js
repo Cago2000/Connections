@@ -1,0 +1,25 @@
+export async function initDiscord() {
+    if (import.meta.env.DEV) {
+        return { user_id: "test_user_123", username: "testuser" };
+    }
+
+    const { DiscordSDK } = await import("@discord/embedded-app-sdk");
+    const sdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
+    await sdk.ready();
+
+    const { code } = await sdk.commands.authorize({
+        client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
+        response_type: "code",
+        state: "",
+        prompt: "none",
+        scope: ["identify"],
+    });
+
+    const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+    });
+
+    return res.json();
+}
