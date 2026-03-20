@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap');
 
+#root {
+    width: 100%;
+    max-width: 100%;
+}
+
 :root {
     --bg: #f9f7f2;
     --surface: #ffffff;
@@ -12,7 +17,17 @@
     --radius: 6px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    max-width: 100%;
+}
+
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+}
 
 body {
     font-family: 'DM Sans', sans-serif;
@@ -27,11 +42,17 @@ body {
 .app {
     width: 100%;
     max-width: 500px;
-    padding: 24px 16px;
+    padding: 20px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
+    overflow-x: hidden;
+}
+
+.title, .subtitle, .message, .mistakes, .controls, .btn-share {
+    padding-left: 4px;
+    padding-right: 4px;
 }
 
 .title {
@@ -50,27 +71,37 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    overflow-x: hidden;
 }
 
 .tile-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
 }
 
 .tile {
     background: var(--tile-bg);
     border: none;
     border-radius: var(--radius);
-    padding: 20px 8px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
     font-family: 'DM Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.85rem;
+    font-weight: 700;
+    /* font-size removed — set dynamically in Tile.jsx */
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    text-align: center;
+    word-break: break-word;
     cursor: pointer;
     transition: background 0.15s, transform 0.1s;
     user-select: none;
+    width: 100%;
 }
 
 .tile:hover:not(:disabled) {
@@ -184,4 +215,22 @@ button:not(:disabled):hover {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+
+.no-puzzle-banner {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.tile-placeholder {
+    opacity: 0.3;
+    cursor: not-allowed;
+    letter-spacing: 0.1em;
 }

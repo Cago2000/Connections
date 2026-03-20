@@ -7,5 +7,95 @@
             { "level": 2, "group": "Car Brands", "members": ["FORD", "HONDA", "BMW", "AUDI"] },
             { "level": 3, "group": "Shades of Blue", "members": ["NAVY", "COBALT", "AZURE", "TEAL"] }
         ]
+    },
+    "2026-03-20": {
+        "puzzle_id": 2,
+        "groups": [
+            { "level": 0, "group": "Playground Games", "members": ["TAG", "HOPSCOTCH", "MARBLES", "SKIPPING"] },
+            { "level": 1, "group": "___ BALL", "members": ["BASKET", "FOOT", "CANNON", "SNOW"] },
+            { "level": 2, "group": "Currencies", "members": ["YEN", "EURO", "PESO", "FRANC"] },
+            { "level": 3, "group": "Shades of Red", "members": ["CRIMSON", "SCARLET", "MAROON", "BURGUNDY"] }
+        ]
+    },
+    "2026-03-21": {
+        "puzzle_id": 3,
+        "groups": [
+            { "level": 0, "group": "Breakfast Foods", "members": ["WAFFLE", "PORRIDGE", "GRANOLA", "CREPE"] },
+            { "level": 1, "group": "OVER___", "members": ["COAT", "LOAD", "NIGHT", "RULE"] },
+            { "level": 2, "group": "Dances", "members": ["TANGO", "WALTZ", "SALSA", "FOXTROT"] },
+            { "level": 3, "group": "Words after FIRE", "members": ["WORKS", "SIDE", "PLACE", "FLY"] }
+        ]
+    },
+    "2026-03-22": {
+        "puzzle_id": 4,
+        "groups": [
+            { "level": 0, "group": "Things in a Classroom", "members": ["CHALK", "RULER", "ERASER", "GLOBE"] },
+            { "level": 1, "group": "BLACK ___", "members": ["BIRD", "BERRY", "SMITH", "OUT"] },
+            { "level": 2, "group": "Oceans", "members": ["PACIFIC", "ATLANTIC", "ARCTIC", "INDIAN"] },
+            { "level": 3, "group": "Bowie Albums", "members": ["HEROES", "ZIGGY", "ALADDIN", "DIAMOND"] }
+        ]
+    },
+    "2026-03-23": {
+        "puzzle_id": 5,
+        "groups": [
+            { "level": 0, "group": "Pizza Toppings", "members": ["PEPPERONI", "ANCHOVY", "OLIVE", "MUSHROOM"] },
+            { "level": 1, "group": "___ STONE", "members": ["LIME", "SAND", "COBBLE", "CORNER"] },
+            { "level": 2, "group": "Greek Letters", "members": ["ALPHA", "DELTA", "SIGMA", "OMEGA"] },
+            { "level": 3, "group": "Things that are pitched", "members": ["TENT", "BALL", "VOICE", "BATTLE"] }
+        ]
+    },
+    "2026-03-24": {
+        "puzzle_id": 6,
+        "groups": [
+            { "level": 0, "group": "Farm Animals", "members": ["GOAT", "DONKEY", "ROOSTER", "GOOSE"] },
+            { "level": 1, "group": "SUN ___", "members": ["FLOWER", "BURN", "RISE", "SCREEN"] },
+            { "level": 2, "group": "Monopoly Pieces", "members": ["THIMBLE", "IRON", "BOOT", "TOPHAT"] },
+            { "level": 3, "group": "Words before LIGHT", "members": ["MOON", "SPOT", "FLASH", "LIME"] }
+        ]
+    },
+    "2026-03-25": {
+        "puzzle_id": 7,
+        "groups": [
+            { "level": 0, "group": "Types of Pasta", "members": ["PENNE", "RIGATONI", "FUSILLI", "ORZO"] },
+            { "level": 1, "group": "___ HOUSE", "members": ["TREE", "STORE", "POWER", "FULL"] },
+            { "level": 2, "group": "Bones in the Body", "members": ["FEMUR", "TIBIA", "CLAVICLE", "STERNUM"] },
+            { "level": 3, "group": "Anagram of a colour", "members": ["BARE", "BLUE", "RNOGE", "LEWYO"] }
+        ]
+    },
+    "2026-03-26": {
+        "puzzle_id": 8,
+        "groups": [
+            { "level": 0, "group": "Card Games", "members": ["SNAP", "WHIST", "CRIBBAGE", "CANASTA"] },
+            { "level": 1, "group": "DOOR ___", "members": ["BELL", "STEP", "MAN", "KNOB"] },
+            { "level": 2, "group": "Constellations", "members": ["ORION", "LYRA", "DRACO", "VEGA"] },
+            { "level": 3, "group": "Things that can be 'stiff'", "members": ["DRINK", "BREEZE", "COMPETITION", "UPPER LIP"] }
+        ]
+    },
+    "2026-03-27": {
+        "puzzle_id": 9,
+        "groups": [
+            { "level": 0, "group": "Herbs", "members": ["BASIL", "THYME", "CHIVE", "DILL"] },
+            { "level": 1, "group": "___ CAKE", "members": ["CUP", "PAN", "CHEESE", "SPONGE"] },
+            { "level": 2, "group": "Types of Bridge", "members": ["ARCH", "CABLE", "TRUSS", "SWING"] },
+            { "level": 3, "group": "Homophones of numbers", "members": ["ATE", "FOR", "TOO", "WON"] }
+        ]
+    },
+    "2026-03-28": {
+        "puzzle_id": 10,
+        "groups": [
+            { "level": 0, "group": "Insects", "members": ["APHID", "EARWIG", "MANTIS", "WEEVIL"] },
+            { "level": 1, "group": "BOOK ___", "members": ["SHELF", "WORM", "CASE", "MARK"] },
+            { "level": 2, "group": "Famous Volcanos", "members": ["ETNA", "FUJI", "VESUVIUS", "KRAKATOA"] },
+            { "level": 3, "group": "Words that follow DEAD", "members": ["LINE", "LOCK", "PAN", "BEAT"] }
+        ]
+    },
+    "2026-03-29": {
+        "puzzle_id": 11,
+        "groups": [
+            { "level": 0, "group": "Types of Cheese", "members": ["BRIE", "GOUDA", "HAVARTI", "GRUYERE"] },
+            { "level": 1, "group": "___ WORK", "members": ["FRAME", "GROUND", "TEAM", "NET"] },
+            { "level": 2, "group": "Famous Cleopatras", "members": ["NEEDLE", "BARGE", "ASP", "CAESAR"] },
+            { "level": 3, "group": "Things with rings", "members": ["SATURN", "TREE", "BOXER", "PHONE"] }
+        ]
     }
 }

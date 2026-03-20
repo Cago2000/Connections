@@ -1,0 +1,57 @@
+/* ── Mobile / Discord phone app ─────────────────────────────── */
+
+/*
+  Discord's mobile embedded activity runs inside a WebView that
+  reports 100vw/100vh but adds its own chrome. Using dvh (dynamic
+  viewport height) prevents content being clipped behind the
+  Discord bottom bar on iOS/Android.
+*/
+body {
+    min-height: 100dvh;
+    /* Prevent iOS rubber-band scroll exposing a white gap */
+    overscroll-behavior: none;
+}
+
+.app {
+    /* Let the app scroll naturally on small screens instead of overflowing */
+    min-height: 100dvh;
+    justify-content: flex-start;
+    padding: 16px 12px 32px;
+}
+
+/* Smaller title on very narrow screens */
+@media (max-width: 380px) {
+    .title { font-size: 1.5rem; }
+
+    .tile {
+        padding: 14px 4px;
+        font-size: 0.75rem;
+    }
+
+    .controls { gap: 8px; }
+
+    button.btn-primary,
+    button.btn-secondary {
+        padding: 10px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+/* No-puzzle state */
+.no-puzzle-banner {
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.tile-placeholder {
+    opacity: 0.3;
+    cursor: not-allowed;
+    letter-spacing: 0.1em;
+}

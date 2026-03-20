@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 
 def check_guess(selected: list[str], puzzle: dict) -> dict:
@@ -27,6 +27,15 @@ def _find_closest_group(selected: set, groups: list) -> tuple[int, int]:
 
 def is_completed(solved_groups: list, puzzle: dict) -> bool:
     return len(solved_groups) == len(puzzle["groups"])
+
+
+def updated_streak(current_streak: int, last_solved_date: str | None, today: str) -> int:
+    if last_solved_date is None:
+        return 1
+    yesterday = (date.fromisoformat(today) - timedelta(days=1)).isoformat()
+    if last_solved_date == yesterday:
+        return current_streak + 1
+    return 1
 
 
 def build_share_text(puzzle_id: int, guesses: list[dict], mistakes: int) -> str:

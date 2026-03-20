@@ -1,11 +1,15 @@
 export async function initDiscord() {
     if (import.meta.env.DEV) {
-        return { user_id: "test_user_123", username: "testuser" };
+        return { access_token: "dev_token", user_id: "test_user_123", username: "testuser" };
     }
 
     const { DiscordSDK } = await import("@discord/embedded-app-sdk");
     const sdk = new DiscordSDK(import.meta.env.VITE_DISCORD_CLIENT_ID);
     await sdk.ready();
+
+    sdk.patchUrlMappings([
+        { prefix: "/api", target: import.meta.env.VITE_SERVER_URL },
+    ]);
 
     const { code } = await sdk.commands.authorize({
         client_id: import.meta.env.VITE_DISCORD_CLIENT_ID,
