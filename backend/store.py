@@ -34,10 +34,43 @@ def get_player(date: str, user_id: str) -> dict:
     return state.get(date, {}).get("players", {}).get(user_id, _default_player())
 
 
+def get_all_players(date: str) -> dict:
+    """Returns {user_id: player_dict} for all players on a given date."""
+    state = _load(STATE_FILE)
+    return state.get(date, {}).get("players", {})
+
+
 def upsert_player(date: str, user_id: str, player: dict):
     state = _load(STATE_FILE)
     state.setdefault(date, {"players": {}})
     state[date]["players"][user_id] = player
+    _save(STATE_FILE, state)
+
+
+def get_usernames(date: str) -> dict:
+    """Returns {user_id: username} for all players on a given date."""
+    state = _load(STATE_FILE)
+    return state.get(date, {}).get("usernames", {})
+
+
+def upsert_username(date: str, user_id: str, username: str):
+    state = _load(STATE_FILE)
+    state.setdefault(date, {"players": {}})
+    state[date].setdefault("usernames", {})
+    state[date]["usernames"][user_id] = username
+    _save(STATE_FILE, state)
+
+
+def get_leaderboard_message(date: str) -> dict | None:
+    """Returns {channel_id, message_id} if a leaderboard message exists for this date."""
+    state = _load(STATE_FILE)
+    return state.get(date, {}).get("leaderboard_message")
+
+
+def set_leaderboard_message(date: str, channel_id: str, message_id: str):
+    state = _load(STATE_FILE)
+    state.setdefault(date, {"players": {}})
+    state[date]["leaderboard_message"] = {"channel_id": channel_id, "message_id": message_id}
     _save(STATE_FILE, state)
 
 
@@ -48,5 +81,5 @@ def _default_player() -> dict:
         "mistakes": 0,
         "completed": False,
         "streak": 0,
-        "last_solved_date": None
+        "last_solved_date": None,
     }

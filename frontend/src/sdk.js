@@ -1,6 +1,11 @@
 export async function initDiscord() {
     if (import.meta.env.DEV) {
-        return { access_token: "dev_token", user_id: "test_user_123", username: "testuser" };
+        return {
+            access_token: "dev_token",
+            user_id: "test_user_123",
+            username: "testuser",
+            channel_id: "dev_channel_123",
+        };
     }
 
     const { DiscordSDK } = await import("@discord/embedded-app-sdk");
@@ -25,5 +30,6 @@ export async function initDiscord() {
         body: JSON.stringify({ code }),
     });
 
-    return res.json();
+    const authData = await res.json();
+    return { ...authData, channel_id: sdk.channelId ?? null };
 }

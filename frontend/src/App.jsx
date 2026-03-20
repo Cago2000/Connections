@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Board from "./Board";
-import { initDiscord } from "./sdk";
+import { initDiscord } from "./sdk.js";
 
 const MAX_SELECTED = 4;
 const today = new Date().toISOString().split("T")[0];
@@ -18,10 +18,18 @@ export default function App() {
             const userData = await initDiscord();
             setUser(userData);
 
+            const puzzleUrl = new URL(`/api/puzzle/${today}`, window.location.origin);
+            console.log("puzzleUrl:", puzzleUrl.toString());
+            puzzleUrl.searchParams.set("channel_id", userData.channel_id);
+            puzzleUrl.searchParams.set("user_id", userData.user_id);
+            puzzleUrl.searchParams.set("username", userData.username);
+
             const [puzzleRes, stateRes] = await Promise.all([
-                fetch(`/api/puzzle/${today}`),
+                fetch(puzzleUrl),
                 fetch(`/api/state/${today}/${userData.user_id}`),
             ]);
+            console.log("puzzleRes status:", puzzleRes.status);
+            console.log("stateRes status:", stateRes.status);
 
             const puzzleData = puzzleRes.ok ? await puzzleRes.json() : null;
             if (puzzleData) puzzleData.words = shuffleArray(puzzleData.words);
@@ -61,8 +69,15 @@ export default function App() {
 
         const res = await fetch("/api/guess", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_id: user.user_id, date: today, selected }),
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${user.access_token}`,
+            },
+            body: JSON.stringify({
+                date: today,
+                selected,
+                channel_id: user.channel_id,
+            }),
         });
 
         const result = await res.json();
@@ -81,7 +96,9 @@ export default function App() {
     }
 
     async function shareResult() {
-        const res = await fetch(`/api/share/${today}/${user.user_id}`);
+        const res = await fetch(`/api/share/${today}`, {
+            headers: { "Authorization": `Bearer ${user.access_token}` },
+        });
         const { text } = await res.json();
         await navigator.clipboard.writeText(text);
         setMessage("Copied to clipboard!");

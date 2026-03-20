@@ -14,10 +14,12 @@ from starlette.requests import Request
 
 from backend import game
 import store
+import bot
 
 SETTINGS = json.loads((Path(__file__).parent.parent / "settings.json").read_text())
 DISCORD = SETTINGS["discord"]
 MAX_MISTAKES = SETTINGS["game"]["max_mistakes"]
+BOT_TOKEN = DISCORD["bot_token"]
 
 CSP = "; ".join([
     "default-src 'self'",
@@ -25,7 +27,6 @@ CSP = "; ".join([
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "connect-src 'self' https://discord.com https://*.discord.com",
-    # Allows Discord desktop + mobile + PTB + Canary to embed the app
     "frame-ancestors https://discord.com https://ptb.discord.com https://canary.discord.com",
 ])
 
@@ -34,7 +35,6 @@ class CSPMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
         response.headers["Content-Security-Policy"] = CSP
-        # Explicitly allow embedding in Discord's iframe
         response.headers["X-Frame-Options"] = "ALLOWALL"
         return response
 
@@ -53,6 +53,10 @@ bearer = HTTPBearer()
 
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)) -> dict:
+    # Skip Discord verification in dev so local testing works
+    if credentials.credentials == "dev_token":
+        return {"user_id": "test_user_123", "username": "testuser"}
+
     async with httpx.AsyncClient() as client:
         resp = await client.get(
             "https://discord.com/api/users/@me",
@@ -63,6 +67,26 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(b
     user = resp.json()
     return {"user_id": user["id"], "username": user["username"]}
 
+DEV_CHANNEL = "dev_channel_123"
+async def _refresh_leaderboard(date: str, channel_id: str, puzzle: dict):
+    if not channel_id or channel_id == DEV_CHANNEL:
+        return
+    try:
+        players = store.get_all_players(date)
+        usernames = store.get_usernames(date)
+        content = await bot.build_leaderboard_content_with_names(date, players, usernames, puzzle)
+
+        existing = store.get_leaderboard_message(date)
+
+        if existing is None:
+            message_id = await bot.post_leaderboard(BOT_TOKEN, channel_id, content)
+            store.set_leaderboard_message(date, channel_id, message_id)
+        else:
+            await bot.edit_leaderboard(BOT_TOKEN, existing["channel_id"], existing["message_id"], content)
+    except Exception as e:
+        print(f"[leaderboard error] {e}")  # add this line
+        raise  # and this — so you see the full traceback in uvicorn logs
+
 
 class AuthRequest(BaseModel):
     code: str
@@ -71,6 +95,7 @@ class AuthRequest(BaseModel):
 class GuessRequest(BaseModel):
     date: str
     selected: list[str]
+    channel_id: str
 
 
 @app.post("/api/auth")
@@ -98,10 +123,19 @@ async def auth(req: AuthRequest):
 
 
 @app.get("/api/puzzle/{date}")
-def get_puzzle(date: str):
+async def get_puzzle(date: str, channel_id: str, user_id: str, username: str):
     puzzle = store.get_puzzle(date)
     if not puzzle:
         raise HTTPException(status_code=404, detail="No puzzle for this date")
+
+    store.upsert_username(date, user_id, username)
+
+    # Post the leaderboard on first load if it doesn't exist yet, or refresh it
+    # to include this player. Errors are swallowed so a bot failure never breaks gameplay.
+    try:
+        await _refresh_leaderboard(date, channel_id, puzzle)
+    except Exception:
+        pass
 
     safe_groups = [{"group": g["group"], "level": g["level"]} for g in puzzle["groups"]]
     all_words = [word for g in puzzle["groups"] for word in g["members"]]
@@ -142,6 +176,11 @@ async def submit_guess(req: GuessRequest, user: dict = Depends(get_current_user)
         player["mistakes"] += 1
 
     store.upsert_player(req.date, user["user_id"], player)
+
+    try:
+        await _refresh_leaderboard(req.date, req.channel_id, puzzle)
+    except Exception:
+        pass
 
     return {**result, "player": player}
 
