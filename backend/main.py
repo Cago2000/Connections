@@ -1,8 +1,10 @@
 import json
 import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import httpx
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
@@ -15,6 +17,7 @@ from starlette.requests import Request
 from backend import game
 from backend import store
 from backend import bot
+from backend.scraper import fetch_and_store_puzzle
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +46,21 @@ class CSPMiddleware(BaseHTTPMiddleware):
         return response
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await fetch_and_store_puzzle()
+
+    scheduler = AsyncIOScheduler()
+    # Runs every day at 08:00 — Eyefyre repo is usually updated by then
+    scheduler.add_job(fetch_and_store_puzzle, "cron", hour=8, minute=0)
+    scheduler.start()
+
+    yield
+
+    scheduler.shutdown()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(CSPMiddleware)
 app.add_middleware(

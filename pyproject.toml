@@ -7,6 +7,7 @@ dependencies = [
     "uvicorn[standard]",
     "httpx",
     "python-multipart",
+    "apscheduler",
 ]
 
 [project.scripts]
