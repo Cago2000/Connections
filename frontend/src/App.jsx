@@ -24,6 +24,7 @@ export default function App() {
             ]);
 
             const puzzleData = puzzleRes.ok ? await puzzleRes.json() : null;
+            if (puzzleData) puzzleData.words = shuffleArray(puzzleData.words);
             const playerData = stateRes.ok ? await stateRes.json() : null;
 
             setPuzzle(puzzleData);
@@ -40,6 +41,15 @@ export default function App() {
         }
         if (selected.length >= MAX_SELECTED) return;
         setSelected([...selected, word]);
+    }
+
+    function shuffleArray(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
     }
 
     function shuffle() {
