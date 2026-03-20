@@ -109,9 +109,9 @@ def get_puzzle(date: str):
     return {"puzzle_id": puzzle["puzzle_id"], "date": date, "words": all_words, "groups": safe_groups}
 
 
-@app.get("/api/state/{date}")
-async def get_state(date: str, user: dict = Depends(get_current_user)):
-    return store.get_player(date, user["user_id"])
+@app.get("/api/state/{date}/{user_id}")
+async def get_state(date: str, user_id: str):
+    return store.get_player(date, user_id)
 
 
 @app.post("/api/guess")

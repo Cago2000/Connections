@@ -104,7 +104,7 @@ body {
     width: 100%;
 }
 
-.tile:hover:not(:disabled) {
+.tile:hover:not(:disabled):not(.selected) {
     background: #e4e2db;
 }
 

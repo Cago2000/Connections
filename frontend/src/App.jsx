@@ -23,8 +23,11 @@ export default function App() {
                 fetch(`/api/state/${today}/${userData.user_id}`),
             ]);
 
-            setPuzzle(await puzzleRes.json());
-            setPlayer(await stateRes.json());
+            const puzzleData = puzzleRes.ok ? await puzzleRes.json() : null;
+            const playerData = stateRes.ok ? await stateRes.json() : null;
+
+            setPuzzle(puzzleData);
+            setPlayer(playerData);
             setLoading(false);
         }
         init();
@@ -39,6 +42,10 @@ export default function App() {
         setSelected([...selected, word]);
     }
 
+    function shuffle() {
+        setPuzzle(p => ({ ...p, words: [...p.words].sort(() => Math.random() - 0.5) }));
+    }
+
     async function submitGuess() {
         if (selected.length !== MAX_SELECTED) return;
 
@@ -49,8 +56,8 @@ export default function App() {
         });
 
         const result = await res.json();
-        setPlayer(result.player);
         setSelected([]);
+        setPlayer(result.player);
 
         if (result.correct) {
             setMessage(`✅ ${result.group}!`);
@@ -73,11 +80,12 @@ export default function App() {
 
     if (loading) return <div className="screen-center">Loading...</div>;
     if (!puzzle) return <div className="screen-center">No puzzle today.</div>;
+    if (!player) return <div className="screen-center">Loading...</div>;
 
     const mistakesLeft = 4 - player.mistakes;
     const solvedGroups = puzzle.groups
         .filter(g => player.solved_groups.includes(g.level))
-        .map(g => ({ ...g, members: puzzle.words.filter(w => /* resolved server side */ false) }));
+        .map(g => ({ ...g, members: puzzle.words.filter(w => false) }));
 
     return (
         <div className="app">
@@ -99,6 +107,7 @@ export default function App() {
 
             <div className="controls">
                 <button className="btn-secondary" onClick={() => setSelected([])}>Deselect All</button>
+                <button className="btn-secondary" onClick={shuffle}>Shuffle</button>
                 <button
                     className="btn-primary"
                     onClick={submitGuess}
