@@ -10,6 +10,7 @@ export default function App() {
     const [puzzle, setPuzzle] = useState(null);
     const [player, setPlayer] = useState(null);
     const [selected, setSelected] = useState([]);
+    const [solvedGroups, setSolvedGroups] = useState([]);
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(true);
 
@@ -19,7 +20,6 @@ export default function App() {
             setUser(userData);
 
             const puzzleUrl = new URL(`/api/puzzle/${today}`, window.location.origin);
-            console.log("puzzleUrl:", puzzleUrl.toString());
             puzzleUrl.searchParams.set("channel_id", userData.channel_id);
             puzzleUrl.searchParams.set("user_id", userData.user_id);
             puzzleUrl.searchParams.set("username", userData.username);
@@ -28,8 +28,6 @@ export default function App() {
                 fetch(puzzleUrl),
                 fetch(`/api/state/${today}/${userData.user_id}`),
             ]);
-            console.log("puzzleRes status:", puzzleRes.status);
-            console.log("stateRes status:", stateRes.status);
 
             const puzzleData = puzzleRes.ok ? await puzzleRes.json() : null;
             if (puzzleData) puzzleData.words = shuffleArray(puzzleData.words);
@@ -37,6 +35,17 @@ export default function App() {
 
             setPuzzle(puzzleData);
             setPlayer(playerData);
+
+            // Rebuild solved groups from existing guess history on resume
+            if (puzzleData && playerData) {
+                const correct = playerData.guesses.filter(g => g.correct);
+                const grouped = correct.map(g => {
+                    const meta = puzzleData.groups.find(pg => pg.level === g.level);
+                    return { level: g.level, group: meta?.group ?? "", members: g.words };
+                });
+                setSolvedGroups(grouped);
+            }
+
             setLoading(false);
         }
         init();
@@ -81,10 +90,15 @@ export default function App() {
         });
 
         const result = await res.json();
-        setSelected([]);
         setPlayer(result.player);
 
         if (result.correct) {
+            const meta = puzzle.groups.find(g => g.level === result.level);
+            setSolvedGroups(prev => [...prev, {
+                level: result.level,
+                group: result.group,
+                members: selected,
+            }]);
             setMessage(`✅ ${result.group}!`);
         } else if (result.one_away) {
             setMessage("One away...");
@@ -92,6 +106,7 @@ export default function App() {
             setMessage("Not quite!");
         }
 
+        setSelected([]);
         setTimeout(() => setMessage(""), 2000);
     }
 
@@ -110,9 +125,6 @@ export default function App() {
     if (!player) return <div className="screen-center">Loading...</div>;
 
     const mistakesLeft = 4 - player.mistakes;
-    const solvedGroups = puzzle.groups
-        .filter(g => player.solved_groups.includes(g.level))
-        .map(g => ({ ...g, members: puzzle.words.filter(w => false) }));
 
     return (
         <div className="app">

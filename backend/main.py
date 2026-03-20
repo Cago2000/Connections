@@ -1,11 +1,11 @@
 import json
+import logging
 from pathlib import Path
 
 import httpx
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
-from fastapi.routing import APIRoute
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -13,8 +13,10 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
 from backend import game
-import store
-import bot
+from backend import store
+from backend import bot
+
+logger = logging.getLogger(__name__)
 
 SETTINGS = json.loads((Path(__file__).parent.parent / "settings.json").read_text())
 DISCORD = SETTINGS["discord"]
@@ -29,6 +31,8 @@ CSP = "; ".join([
     "connect-src 'self' https://discord.com https://*.discord.com",
     "frame-ancestors https://discord.com https://ptb.discord.com https://canary.discord.com",
 ])
+
+DEV_CHANNEL = "dev_channel_123"
 
 
 class CSPMiddleware(BaseHTTPMiddleware):
@@ -53,7 +57,6 @@ bearer = HTTPBearer()
 
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)) -> dict:
-    # Skip Discord verification in dev so local testing works
     if credentials.credentials == "dev_token":
         return {"user_id": "test_user_123", "username": "testuser"}
 
@@ -67,7 +70,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(b
     user = resp.json()
     return {"user_id": user["id"], "username": user["username"]}
 
-DEV_CHANNEL = "dev_channel_123"
+
 async def _refresh_leaderboard(date: str, channel_id: str, puzzle: dict):
     if not channel_id or channel_id == DEV_CHANNEL:
         return
@@ -75,7 +78,6 @@ async def _refresh_leaderboard(date: str, channel_id: str, puzzle: dict):
         players = store.get_all_players(date)
         usernames = store.get_usernames(date)
         content = await bot.build_leaderboard_content_with_names(date, players, usernames, puzzle)
-
         existing = store.get_leaderboard_message(date)
 
         if existing is None:
@@ -83,9 +85,8 @@ async def _refresh_leaderboard(date: str, channel_id: str, puzzle: dict):
             store.set_leaderboard_message(date, channel_id, message_id)
         else:
             await bot.edit_leaderboard(BOT_TOKEN, existing["channel_id"], existing["message_id"], content)
-    except Exception as e:
-        print(f"[leaderboard error] {e}")  # add this line
-        raise  # and this — so you see the full traceback in uvicorn logs
+    except Exception:
+        logger.exception("Leaderboard refresh failed for date=%s channel=%s", date, channel_id)
 
 
 class AuthRequest(BaseModel):
@@ -129,13 +130,7 @@ async def get_puzzle(date: str, channel_id: str, user_id: str, username: str):
         raise HTTPException(status_code=404, detail="No puzzle for this date")
 
     store.upsert_username(date, user_id, username)
-
-    # Post the leaderboard on first load if it doesn't exist yet, or refresh it
-    # to include this player. Errors are swallowed so a bot failure never breaks gameplay.
-    try:
-        await _refresh_leaderboard(date, channel_id, puzzle)
-    except Exception:
-        pass
+    await _refresh_leaderboard(date, channel_id, puzzle)
 
     safe_groups = [{"group": g["group"], "level": g["level"]} for g in puzzle["groups"]]
     all_words = [word for g in puzzle["groups"] for word in g["members"]]
@@ -176,11 +171,7 @@ async def submit_guess(req: GuessRequest, user: dict = Depends(get_current_user)
         player["mistakes"] += 1
 
     store.upsert_player(req.date, user["user_id"], player)
-
-    try:
-        await _refresh_leaderboard(req.date, req.channel_id, puzzle)
-    except Exception:
-        pass
+    await _refresh_leaderboard(req.date, req.channel_id, puzzle)
 
     return {**result, "player": player}
 
